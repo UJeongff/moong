@@ -19,7 +19,7 @@ import Profile from "./pages/Profile";
 import Edit from "./pages/Edit";
 import Search from "./pages/Search";
 import SearchResult from "./pages/SearchResult";
-import Initialinfo from "./pages/InitialInfo";
+import Initialinfo from "./pages/Initialinfo";
 import Review from "./pages/Review";
 import Chat from "./pages/Chat";
 import ChatDetail from "./pages/ChatDetail";
