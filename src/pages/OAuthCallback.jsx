@@ -28,7 +28,7 @@ const OAuthCallback = () => {
   const handleLoginPost = async (authCode) => {
     // URL-safe 인코딩된 authCode 생성
     const encodedAuthCode = encodeURIComponent(authCode);
-    const data = { authCode: code };
+    const data = { authCode: encodedAuthCode };
 
     console.log("Sending encoded data:", data); // 인코딩된 payload 값 확인
 
