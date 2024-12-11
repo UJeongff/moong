@@ -1,8 +1,9 @@
-import React, { useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import styled from "styled-components";
 import { UserContext } from "../App";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import axios from "axios";
 
 const Container = styled.div`
   display: flex;
@@ -43,16 +44,78 @@ const InfoCard = styled.div`
 `;
 
 const Profile = () => {
-  const { userInfo } = useContext(UserContext);
+  const { userInfo, setUserInfo } = useContext(UserContext);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  // 더미 데이터
-  const profileData = userInfo || {
-    name: "테스트 사용자",
-    email: "testuser@example.com",
-    phone: "010-1234-5678",
-    birthDate: "1995-01-01",
-    department: "컴퓨터공학과",
-    studentId: "201900123",
+  // 사용자 프로필을 백엔드에서 가져오는 함수
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        setError(true);
+        setLoading(false);
+        return;
+      }
+
+      const response = await axios.get(`${import.meta.env.VITE_REACT_APP_API_URL}/api/v1/profile/details`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        const data = response.data.data;
+        setUserInfo(data); // Context에 사용자 정보 업데이트
+        setLoading(false);
+      } else {
+        setError(true);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error("프로필 정보를 가져오는 데 실패했습니다:", err);
+      setError(true);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (loading) {
+    return (
+      <Container>
+        <Header title="프로필" />
+        <Content>
+          <p>로딩 중...</p>
+        </Content>
+        <Footer />
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <Header title="프로필" />
+        <Content>
+          <p>프로필 정보를 불러오는 데 실패했습니다. 다시 시도해 주세요.</p>
+        </Content>
+        <Footer />
+      </Container>
+    );
+  }
+
+  // 기본값을 제공하는 profileData 정의
+  const profileData = {
+    name: userInfo?.name || "홍길동",
+    email: userInfo?.email || "이메일을 입력해주세요",
+    phone: userInfo?.phoneNumber || "전화번호를 입력해주세요",
+    birthDate: userInfo?.birthday || "생년월일을 입력해주세요",
+    department: userInfo?.department || "학과를 입력해주세요",
+    studentId: userInfo?.studentNumber || "학번을 입력해주세요",
   };
 
   return (

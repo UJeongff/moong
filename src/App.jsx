@@ -1,4 +1,4 @@
-import "./App.css";
+import "./App.css"; 
 import {
   useReducer,
   useRef,
@@ -46,12 +46,19 @@ function reducer(state, action) {
 function App() {
   const [data, dispatch] = useReducer(reducer, []);
 
-  const [userInfo, setUserInfo] = useState(() => ({
-    id: "", // 초기 사용자 ID를 빈 문자열로 설정
-    name: "",
-    email: "",
-    profileImage: "",
-  }));
+  // userInfo 초기 상태를 로컬 스토리지에서 불러오기
+  const [userInfo, setUserInfo] = useState(() => {
+    const savedUser = localStorage.getItem("userInfo");
+    return savedUser ? JSON.parse(savedUser) : {
+      name: "",
+      email: "",
+      //profileImage: "",
+      phoneNumber: "",
+      birthday:"",
+      studentNumber:"",
+      department:"",
+    };
+  });
 
   const [reviews, setReviews] = useState(() => {
     const savedReviews = localStorage.getItem("reviews");
@@ -83,11 +90,13 @@ function App() {
     ) + 1
   );
 
-  const isLoggedIn = userInfo?.id ? true : false;
+  const isLoggedIn = !!userInfo?.email;
 
   useEffect(() => {
+    console.log("App.jsx - userInfo:", userInfo);
+    console.log("App.jsx - isLoggedIn:", isLoggedIn);
     localStorage.setItem("userInfo", JSON.stringify(userInfo));
-  }, [userInfo]);
+  }, [userInfo, isLoggedIn]);  
 
   useEffect(() => {
     localStorage.setItem("reviews", JSON.stringify(reviews));
